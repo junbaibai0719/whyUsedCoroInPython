@@ -7,10 +7,10 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 import requests
+import aiohttp
 
-def gen():
-    while True:
-        yield 1
+import qEventloop
+
 
 
 class MainWindow(QMainWindow):
@@ -24,11 +24,17 @@ class MainWindow(QMainWindow):
         self.btn.clicked.connect(self.on_click)
 
     def on_click(self):
-        try:
-            resp =  requests.get("http://127.0.0.1:8000/", timeout=5)        
-            self.btn.setText(resp.text)
-        except:
-            self.btn.setText("Failed")
+        async def coro():
+            async with aiohttp.ClientSession() as session:
+                async with session.get("https://baidu.com") as resp:
+                    print(resp.status)
+                    print((await resp.text())[:100])
+
+        async def main():
+            await asyncio.gather(*[coro() for i in range(100)])
+        print(loop.is_running())
+        loop.create_task(main())
+        loop.call_later(0.05, print, "hello")
 
     #     self.gen = gen()
     #     self.startTimer(0)
@@ -39,7 +45,8 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    loop = qEventloop.QProactorLoop(app)
+    asyncio.set_event_loop(loop)
     window = MainWindow()
     window.show()
-    app.exec()
-    asyncio.run(asyncio.sleep(1))
+    loop.run_forever()

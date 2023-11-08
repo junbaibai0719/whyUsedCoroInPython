@@ -15,6 +15,12 @@ class QProactorLoop(asyncio.ProactorEventLoop):
         self._timer.timeout.connect(self._run_once)
         self._timer.setInterval(0)
 
+        async def timer_loop():
+            while True:
+                await asyncio.sleep(0.015)
+
+        self.create_task(timer_loop())
+
     def _run_once(self):
         if not self._stopping:
             super()._run_once()
@@ -32,7 +38,6 @@ class QProactorLoop(asyncio.ProactorEventLoop):
             events._set_running_loop(self)
             self._timer.start()
             self._app.exec_()
-
         finally:
             self._stopping = False
             self._thread_id = None
@@ -62,7 +67,7 @@ class QProactorLoop(asyncio.ProactorEventLoop):
 class QIocp(asyncio.IocpProactor):
     def select(self, timeout=None):
         if not self._results:
-            self._poll(0)
+            self._poll(timeout)
         tmp = self._results
         self._results = []
         return tmp

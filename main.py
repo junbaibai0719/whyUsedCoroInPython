@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.btn = QPushButton("Click me", self)
         self.btn.move(100, 100)
         self.btn.clicked.connect(self.on_click)
-
+    
     def on_click(self):
         async def coro():
             async with aiohttp.ClientSession() as session:
@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
                     print((await resp.text())[:100])
 
         async def main():
-            await asyncio.gather(*[coro() for i in range(100)])
+            await asyncio.gather(*[coro() for i in range(1000)])
         print(loop.is_running())
         loop.create_task(main())
         loop.call_later(0.05, print, "hello")

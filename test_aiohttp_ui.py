@@ -22,16 +22,6 @@ from PySide6.QtWidgets import (
 from qEventloop import QProactorLoop, asyncSlot
 
 
-# def asyncClose(fn):
-#     """Allow to run async code before application is closed."""
-
-#     @functools.wraps(fn)
-#     def wrapper(*args, **kwargs):
-#         fn(*args, **kwargs)
-#         QApplication.instance().processEvents()
-
-#     return wrapper
-
 
 class MainWindow(QWidget):
     """Main window."""
@@ -96,8 +86,6 @@ async def main():
     mainWindow = MainWindow()
     mainWindow.show()
     await future
-    # loop.call_later(1, lambda:print("hello world"))
-    # app.exec()
     return True
 
 
